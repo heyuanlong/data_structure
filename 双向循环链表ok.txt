@@ -1,0 +1,89 @@
+
+#include <iostream>//带有空头结点的双向循环链表
+#include <string>
+/////////////////////////////////若声明了析构函数，则必须还要定义它，因为它肯定会被调用
+using namespace std;
+
+#define element int
+typedef struct node* pointer_node;
+ struct node
+  {
+    pointer_node llink;
+    element item;
+    pointer_node rlink;
+  };
+
+class shuangxianglb
+{
+public:
+  shuangxianglb();
+  ~shuangxianglb(){}
+  void dinsert(pointer_node node,pointer_node newnode);//插入node的后面
+  void ddelete(pointer_node node,pointer_node deleted);//这里的node是头结点，deleted是要删的
+  pointer_node dd(int x);//获取结点
+  void show();//遍历
+
+   pointer_node head;//指向头结点
+
+  /* data */
+};
+shuangxianglb::shuangxianglb()
+{
+   head=new struct node;
+   head->llink=head;
+   head->rlink=head;
+}
+void  shuangxianglb::dinsert(pointer_node node,pointer_node newnode)//插入node的后面
+{
+   newnode->llink=node;//1步前继
+   newnode->rlink=node->rlink;//2步后继
+   node->rlink->llink=newnode;//3步前继
+   node->rlink=newnode;//4步后继
+}
+void shuangxianglb::ddelete(pointer_node node,pointer_node deleted)//这里的node是头结点，deleted是要删的
+{
+  if (node==deleted)
+  {
+    cout<<"删除头结点是不允许的\n";
+  }
+  else
+  {
+    deleted->llink->rlink=deleted->rlink;
+    deleted->rlink->llink=deleted->llink;
+    delete deleted;
+  }
+}
+pointer_node shuangxianglb::dd(int x)//获取结点
+{
+    pointer_node pt=new struct node;
+    pt->item=x;
+  return pt;
+}
+void shuangxianglb::show()//遍历
+{
+  pointer_node pt=head->llink;
+  while(pt!=head)
+  {
+    cout<<pt->item;
+    pt=pt->llink;
+  }
+}
+
+
+int main(int argc, char const *argv[])
+{
+  shuangxianglb a;
+
+  a.dinsert(a.head,a.dd(1));
+  a.dinsert(a.head,a.dd(2));
+  pointer_node pt=a.dd(3);
+  a.dinsert(a.head,pt); 
+  a.dinsert(a.head,a.dd(4));
+  a.dinsert(a.head,a.dd(5));
+  a.show();
+  cout<<"\n";
+  a.ddelete(a.head,pt); 
+  a.show();
+ 
+  return 0;
+}

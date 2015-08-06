@@ -1,0 +1,71 @@
+#include <stdio.h>/////对list a数据的改变，模拟封装
+#include <string.h>
+
+typedef struct
+{
+	int a[10];
+	int dqbiao;//当前下标
+	int zuidabiao;//最大下标
+}list;
+
+//对list数据的改变
+list creat();//创建
+void shuchu(list *c);//输出
+void shanchu(list *c,int n);//删除下标为n的数
+void chawei(list *c,int val);//插入尾部
+void chan(list *c,int val,int n);//插到下标为n处
+
+void main()
+{
+	list a;///////////////////这里设计得不合理
+	a=creat();
+	chawei(&a,1);
+	chawei(&a,2);
+	chawei(&a,4);
+	shuchu(&a);
+
+	chan(&a,3,2);
+	shuchu(&a);
+
+	shanchu(&a,0);
+	shuchu(&a);
+
+}
+list creat()
+{
+	list b;
+	b.dqbiao=-1;
+	b.zuidabiao=9;
+	return b;
+}
+void shuchu(list *c)
+{
+	for(int i=0;i<=c->dqbiao;++i)printf("%d",c->a[i]);
+	puts("");
+}
+void shanchu(list *c,int n)
+{
+	if(n<=c->dqbiao)
+	{
+		for(;(n+1)<=c->dqbiao;++n)c->a[n]=c->a[n+1];
+		--c->dqbiao;
+	}
+	else printf("第n位过大");
+}
+void chawei(list *c,int val)
+{
+	if(c->dqbiao<c->zuidabiao)c->a[++c->dqbiao]=val;
+    else printf("数组已经满了，无法插入");
+}
+void chan(list *c,int val,int n)
+{
+	int temp=c->dqbiao;
+	if(n <= c->dqbiao+1 && c->dqbiao < c->zuidabiao)
+	{
+		for( ;temp != (n-1);--temp)
+			c->a[temp+1]=c->a[temp];
+		c->a[n]=val;
+		++c->dqbiao;
+	}
+    else printf("位置错误或数组已经满了，无法插入");
+}

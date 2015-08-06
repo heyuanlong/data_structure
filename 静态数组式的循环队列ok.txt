@@ -1,0 +1,44 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+#define MAX 5
+int xunhuandui[MAX];
+int front=0;//rear变化先于判满
+int rear=0;//判空先于front变化
+//所以front是指向垃圾的
+//所以只能放入MAX-1个数据
+ void add(int item);
+int deleted();
+int main()
+{   
+	add(1);	add(1);	add(1);	add(1);
+	cout<<deleted();
+	cout<<deleted();
+	cout<<deleted();
+	cout<<deleted();
+	cout<<deleted();
+	cout<<deleted();
+return 0;
+ }
+
+ void add(int item)
+ {
+    rear=(rear+1)%MAX;//rear变化先于判满
+    if (rear==front)
+    {
+    	cout<<"满啦";
+    	return;
+    }
+    xunhuandui[rear]=item;
+ }
+int deleted()
+{
+	if (front==rear)//判空先于front变化
+	{
+    	cout<<"空啦";
+    	exit(0);		
+	}
+    front=(front+1)%MAX;
+    return xunhuandui[front];
+ }

@@ -1,0 +1,88 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <assert.h>// 断言
+#define size 5
+typedef struct
+{
+	int *base;
+	int *top;
+	int stack_size;                  
+}zhan;
+
+void setstack(zhan *s);//创栈 
+int isempty(zhan *s);//判空
+int isfull(zhan *s);//判满
+void enter(zhan *s,int a);//进栈
+int gout(zhan *s);//出栈
+void translate(int n,int b);//转换
+int main()
+{
+	int n,b;
+	printf("输入你要转换的整数");
+	scanf("%d",&n);
+	printf("输入要转换几进制");
+	scanf("%d",&b);
+    translate(n,b);
+	getchar();
+return 0; 
+}
+
+void translate(int n,int b)//转换
+{  
+	int i;
+	zhan *s,a;//不是动态申请的
+	s=&a;
+	setstack(s);
+	while(n)
+	{
+		enter(s,n%b);
+		n=n/b;
+	}
+	while(!isempty(s))
+	{
+		i=gout(s);
+		printf("%d",i);
+	}
+
+}
+
+void setstack(zhan *s)//创栈
+{
+	s->base=(int*)malloc(size*sizeof(int));
+	if(!s->base)exit(1);
+	s->top=s->base;
+	s->stack_size=size;
+}
+
+int isempty(zhan *s)//判空
+{
+	return s->top==s->base;
+}
+
+int isfull(zhan *s)//判满
+{
+	return s->top==(s->base+(size-1));
+}
+
+void enter(zhan *s,int a)//进栈
+{
+	
+/*	if(isfull(s))
+	{
+		printf("栈满了");
+		exit(1);
+	}*/
+assert(!isfull(s));
+	*s->top++=a;
+}
+
+int gout(zhan *s)//出栈
+{
+	if(isempty(s))
+	{
+		printf("栈空了");
+		exit(1);		
+	}
+	return *--s->top;
+}

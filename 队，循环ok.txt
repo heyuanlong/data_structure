@@ -1,0 +1,248 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <assert.h>// 断言
+#define size 5
+typedef struct
+{
+	int base;
+	int top;               
+}zhan;
+
+int* setstack();//创队                  
+int isempty(zhan *s);//判空
+int isfull(zhan *s);//判满
+void enter(zhan *s,int *p,int a);//入队
+int gout(zhan *s,int *p);//出队
+void translate(int n,int b);//转换
+
+int main()
+{
+	int n,b;
+	printf("输入你要转换的整数");
+	scanf("%d",&n);
+	printf("输入要转换几进制");
+	scanf("%d",&b);
+
+
+    translate(n,b);
+	getchar();
+return 0; 
+}
+
+void translate(int n,int b)//转换
+{  //这个函数保留到最后，它保留了所有数据；虽然创队函数释放了，但是申请的空间不会
+//消失，只要返回空间的地址即可使用它，传给其他函数均为指针
+	int i;
+	zhan a,*s;
+	int *p;
+	a.base=-1;
+	a.top=-1;
+	s=&a;
+p=setstack();
+
+	while(n)
+	{
+		enter(s,p,n%b);
+		n=n/b;
+	}
+	while(!isempty(s))
+	{
+		i=gout(s,p);
+		printf("%d",i);
+	}
+}
+
+int* setstack()//创队
+{int *p;
+	p=(int*)malloc(size*sizeof(int));
+	if(!p)exit(1);
+	return p;
+}
+
+int isempty(zhan *s)//判空
+{
+	return s->base==s->top;
+}
+
+int isfull(zhan *s)//判满
+{
+	return s->top==size-1;
+}
+void enter(zhan *s,int *p,int a)//进队
+{
+	
+/*	if(isfull(s))
+	{
+		printf("、队满了");
+		exit(1);
+	}*/
+assert(!isfull(s));
+
+	p[++s->top]=a;
+}
+int gout(zhan *s,int*p)//出队
+{
+	if(isempty(s))
+	{
+		printf("队空了");
+		exit(1);		
+	}
+	return p[++s->base];
+}
+
+
+
+//循环队列
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <assert.h>// 断言
+#define size 5
+typedef struct
+{
+	int base;
+	int top;               
+}zhan;
+
+int* setstack();//创队                  
+void enter(zhan *s,int *p,int a);//入队
+int gout(zhan *s,int *p);//出队
+void translate(int n,int b);//转换
+
+int main()
+{
+	int n,b;
+	printf("输入你要转换的整数");
+	scanf("%d",&n);
+	printf("输入要转换几进制");
+	scanf("%d",&b);
+
+
+    translate(n,b);
+	getchar();
+return 0; 
+}
+
+void translate(int n,int b)//转换
+{  
+	int i,n1;
+	zhan a,*s;
+	int *p;
+	a.base=0;
+	a.top=0;
+	s=&a;
+	n1=n;
+p=setstack();
+
+	while(n)
+	{
+		enter(s,p,n%b);
+		n=n/b;
+	}
+	while(s->top!=s->base)
+	{
+		i=gout(s,p);
+		printf("%d",i);
+	}
+
+
+
+		while(n1)
+	{
+		enter(s,p,n1%b);
+		n1=n1/b;
+	}
+	while(s->top!=s->base)
+	{
+		i=gout(s,p);
+		printf("%d",i);
+	}
+}
+
+int* setstack()//创队
+{int *p;
+	p=(int*)malloc(size*sizeof(int));
+	if(!p)exit(1);
+	return p;
+}
+void enter(zhan *s,int *p,int a)//循环队列进队
+{
+	
+s->top=(s->top+1)%size;//取模
+	if(s->top==s->base)//top变化先于判满，赋值最后
+	{
+			printf("队满了");
+			exit(1);
+	}
+p[s->top]=a;
+}
+int gout(zhan *s,int*p)//循环队列出队
+{
+
+	if(s->top==s->base)//判空先于base变化，
+	{
+		printf("队空了");
+		exit(1);		
+	}
+s->base=(s->base+1)%size;
+	return p[s->base];
+}
+
+#include <iostream>////此循环队列中rear是指向无数值的尾巴，front是指向有数值的头
+#include <string>
+#include <list>
+#include <map>
+using namespace std;
+
+template<class t>//队列类模版定义
+class queue
+{
+public:
+	queue(int s=100)//设置的默认参数
+	{
+		size=s+1;
+		front=0;//////头
+		rear=0;//////尾
+		data=new t[size];
+	}
+	~queue()
+	{delete []data;}
+
+	void in_queue(const t&x)
+	{
+		if (isfull())cout<<"满了",exit(1);
+		data[rear++ % size]=x;
+	} //进入队列
+
+	t out_queue()
+	{
+		if (isempty())cout<<"空了",exit(1);
+		return data[front++ % size];
+	}//出队列
+
+	int isempty()const{return front==rear;}/////判断空队列
+	int isfull()const{return (rear+1)%size==front;}//判断满队列
+private:
+	int size,front,rear;
+	t *data;
+};
+int main(int argc, char const *argv[])
+{
+	queue<char> q(3);
+    q.in_queue('a');
+   q.in_queue('b');
+   q.in_queue('c');
+
+   if (q.isfull())
+     cout<<"queue is full"<<endl;
+   else
+   	cout<<"queue is not full"<<endl;
+
+   cout<<q.out_queue()<<endl; 
+
+   q.in_queue('b');
+   q.in_queue('c');
+
+	return 0;
+}
