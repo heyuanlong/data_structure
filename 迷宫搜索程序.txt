@@ -1,0 +1,114 @@
+//迷宫搜索程序  在数据结构的p75页  但是非直接路径啊
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+
+
+#define MAXsize 100
+#define ok_x 4//出口坐标
+#define ok_y 3//出口坐标
+
+typedef struct{
+	short int vert;///行
+	short int horiz;//列
+}offsets;
+typedef struct{
+	short int row;
+	short int col;
+	short int dir;//用于处理方向	
+}element;
+offsets move[8]={{-1,0},{-1,1},{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1}};
+/////////////////   N     NE     E     SE    S      SW    W       NW
+////////////////
+element stack[MAXsize];//栈，用于保留走过的路线
+
+void add(int *top,element item);
+element deleted(int *p);
+void path();
+
+int maze[6][5]={
+	{1,1,1,1,1},
+	{1,0,1,0,1},
+	{1,0,1,0,1},
+	{1,0,1,0,1},
+	{1,0,0,0,1},
+	{1,1,1,1,1}};
+int mark[5][5];
+
+void main()
+{
+path();
+}
+
+void add(int *top,element item)
+{
+	if(*top>=MAXsize)	
+	{
+	printf("jjjjjj\n");
+		exit(1);
+	}
+	stack[++*top]=item;
+
+}
+element deleted(int *top)
+{
+	if(*top==-1)
+	{
+	printf("kkkkkkk\n");
+		exit(1);
+	}
+	return stack[(*top)--];
+}
+
+void path()
+{/////
+	int i;//
+	int row,col;//当前位置
+	nextrow,nextcol,dir;//下一个位置
+	int found=0;//出口到了吗
+
+	element position;//当前坐标
+	mark[1][1]=1;//标志走过的位置
+	int top=0;
+	stack[0].row=1;	stack[0].col=1;	stack[0].dir=0;//存放路线
+
+	printf("fffffff\n");
+	while(top>-1 && !found)
+	{
+		position=deleted(&top);//路线回退
+		row=position.row;	
+		col=position.col;	
+		dir=position.dir;
+		while(dir<8 && !found)
+		{
+			nextrow=row+move[dir].vert;
+			nextcol=col+move[dir].horiz;//下一个位置
+
+			if(nextrow==ok_x && nextcol==ok_y)found=1;//出了
+			else if(!maze[nextrow][nextcol] && !mark[nextrow][nextcol])//是0的路 && 没走过
+				{
+					mark[nextrow][nextcol]=1;
+					position.row=row;
+					position.col=col;
+					position.dir=++dir;//++dir
+					add(&top,position);//当前位置加进去， 、、路线前进
+					row=nextrow;////////到下一个位置去
+					col=nextcol;
+					dir=0;//重置为 0
+				}
+		    else ++dir;
+			
+		}
+	}
+
+	if(found)
+	{
+		printf("the path is :\n");
+		printf("row   col\n");
+		for(i=0;i<=top;i++)
+			printf("%2d%5d\n",stack[i].row,stack[i].col);
+			printf("%2d%5d\n",row,col);
+			printf("%2d%5d\n",ok_x,ok_y);
+	}
+	else 	printf("not path\n");
+}

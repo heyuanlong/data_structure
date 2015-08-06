@@ -1,0 +1,131 @@
+#include<stdio.h>//书上的全排列
+#include<math.h>
+#include<string.h>
+#include<ctype.h>
+
+#define SWAP(a,b,c) c=a;a=b;b=c;
+int jj=0;
+
+void check(char *list,int i,int n)
+{
+	int j,temp;
+
+	if(i==n)//调换完成
+	{
+		for(j=0;j<=n;++j)printf("%c",list[j]);
+		puts("");
+		jj++;
+	}
+	else
+	{
+		for(j=i;j<=n;++j)//若abcd则有4*3*2*1=24种
+		{
+			SWAP(list[i],list[j],temp);//交换
+			check(list,i+1,n);
+			SWAP(list[i],list[j],temp);//交换回来
+		}
+	}
+}
+void main()
+{
+	int len;
+	char c[20];
+	scanf("%s",c);
+    puts("");
+	len=strlen(c);
+	check(c,0,len-1);//len-1
+	printf("%d\n",jj);
+}
+
+
+
+
+
+
+
+
+
+
+#include<stdio.h>//自己写的可重复全排列
+#include<math.h>
+#include<string.h>
+#include<ctype.h>
+#include<stdlib.h>
+#define SWAP(a,b,c) c=a;a=b;b=c;
+int jj=0;
+
+void check(char *list,int i,int n,char *go)
+{
+	int j,temp;
+
+	if(i==n+1)//调换完成
+	{
+		for(j=0;j<=n;++j)printf("%c",go[j]);
+		puts("");
+		jj++;
+	}
+	else
+	{
+		for(j=0;j<n;++j)//若abcd则有4*3*2*1=24种
+		{
+			go[i-1]=list[j];
+			check(list,i+1,n,go);
+		}
+	}
+}
+void main()
+{
+	int len;
+	char c[20];
+	scanf("%s",c);
+    puts("");
+
+	len=strlen(c);
+	char *go=(char*)malloc(len+1);
+	go[len]='\0';
+	check(c,1,len,go);//len
+	printf("%d\n",jj);
+}
+
+
+#include<stdio.h>////自己写的可重复全排列
+#include<math.h>
+#include<string.h>
+#include<ctype.h>
+#include<stdlib.h>
+#define SWAP(a,b,c) c=a;a=b;b=c;
+int jj=0;
+
+void check(char *list,int i,int n,char *go)
+{
+	int j,temp;
+
+	if(i==n+1)//调换完成
+	{
+		for(j=0;j<=n;++j)printf("%c",go[j]);
+		puts("");
+		jj++;
+	}
+	else
+	{
+		for(j=0;j<=n;++j)//若abcd则有4*3*2*1=24种
+		{
+
+			go[i]=list[j];
+			check(list,i+1,n,go);
+		}
+	}
+}
+void main()
+{
+	int len;
+	char c[20];
+	scanf("%s",c);
+    puts("");
+
+	len=strlen(c);
+	char *go=(char*)malloc(len+1);
+	go[len]='\0';
+	check(c,0,len-1,go);//len-1
+	printf("%d\n",jj);
+}
