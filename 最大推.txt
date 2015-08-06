@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <malloc.h>
+#include <stdlib.h>
+
+#define MaxSize 100
+
+typedef struct
+{
+  int key;
+}element;
+element heap[MaxSize];
+
+void insert_max_heap(element item,int *n);//////////////最大堆的插入操作
+element delete_max_heap(int *n);////////////////////////最大堆的删除操作
+
+void main()
+{
+
+int n=0;
+element b[5]={2,0,9,7,5};
+
+insert_max_heap(b[0],&n);
+insert_max_heap(b[1],&n);
+insert_max_heap(b[2],&n);
+insert_max_heap(b[3],&n);
+insert_max_heap(b[4],&n);
+for (int i = 0; i < 6; ++i)
+{
+  printf("%d\n",  delete_max_heap(&n) ); /* code */
+}
+
+
+}
+ 
+ void insert_max_heap(element item,int *n)//////////////////最大堆的插入操作
+{/////////////////////////////////////////用的是数组
+  ////////////////////////////////////////靠引理5-3 （p124）
+  ////////////////////////////////////////两两交换
+  int i;
+  if( (*n)>=MaxSize )/////////////判断满
+  {
+    fprintf(stderr,"the heap is full. \n");
+    exit(1);
+  }
+  i=++(*n);
+  while((i!=1)&&(item.key>heap[i/2].key))
+  {
+    heap[i]=heap[i/2];//为其父节点
+    i/=2;
+  }
+  heap[i]=item;
+}
+
+element delete_max_heap(int *n)/////////////////////////////最大堆的删除操作
+{ //
+  //
+  int parent,child;
+  element item,temp;
+  if( (*n-1)<=-1 )
+  {
+    fprintf(stderr,"the heap is empty. \n");
+    exit(1);
+  }
+  item=heap[1];/////////这就是返回值
+  temp=heap[(*n)--];//temp是最后面的数
+  parent=1;
+  child=2;
+  while(child<=*n)
+  {
+    if((child<*n) && (heap[child].key < heap[child+1].key))
+      child++;//child变为了右子树的值
+    if(temp.key >= heap[child].key)break;
+    heap[parent]=heap[child];////两两交换的关键语句，大值儿子的值给父节点
+    parent=child;//大值儿子成为要被赋值的对象了
+    child*=2;//child总是左子树的值
+  }
+  heap[parent]=temp;/////////最后不满足条件时赋值
+  return item;
+}

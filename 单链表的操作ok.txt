@@ -1,0 +1,290 @@
+#include <stdio.h>///带头结点（这个头是垃圾值的）的单链表。
+#include <string.h>
+#include<stdlib.h>
+
+
+typedef struct lis
+{
+	int a; 
+  struct lis *next;
+  struct lis *last;
+}list;
+
+void creat(list *heap);//创建
+void heap_in(list *heap,int a);//头插
+void tail_in(list *heap,int a);//尾插
+int delete_out(list *heap);//头删
+int tail_out(list *heap);//尾删
+void add(list *heap,int a,int b);//把b插入到a数据之后
+void deleted(list *heap,int a);//删a
+void bianli(list *heap);//遍历
+void fanzhuan(list *heap);//翻转
+void chuanjie(list *heap1,list *heap2);//串接到heap1上//////////////////////////////////////
+void invert(list *lead);//翻转
+void copy(list *heap1,list *heap2);//赋值表
+
+void main()
+{
+	list heap;
+	creat(&heap);
+
+ heap_in(&heap,2);//头插
+ heap_in(&heap,1);//头插
+ bianli(&heap);//遍历
+
+ tail_in(&heap,3);//尾插
+ tail_in(&heap,4);//尾插
+ bianli(&heap);//遍历
+
+delete_out(&heap);//头删
+ bianli(&heap);//遍历
+puts("头删ok");
+
+tail_out(&heap);//尾删
+ bianli(&heap);//遍历
+ puts("尾删ok");
+
+
+ add(&heap,2,2);//把b插入到a数据之后
+ bianli(&heap);//遍历
+  puts("把b插入到a数据之后ok");
+
+ deleted(&heap,2);//删a
+ bianli(&heap);//遍历
+ puts("删2 ok\n");
+
+ heap_in(&heap,9);//头插
+ heap_in(&heap,8);//头插
+ bianli(&heap);//遍历
+
+fanzhuan(&heap);//翻转
+ bianli(&heap);//遍历
+ puts("翻转 ok\n");
+
+invert(&heap);//翻转
+ bianli(&heap);//遍历
+ puts("翻转 ok\n");
+
+
+ list heap2;
+copy(&heap,&heap2);
+ bianli(&heap2);//遍历
+ puts("复制 \nok");
+puts("/////////////////////////////////////////////");
+
+ chuanjie(&heap,&heap2);//串接到heap上////////////////////////翻转有错啊啊
+ getchar();
+ bianli(&heap);//遍历
+ puts("串接 \nok");
+
+}
+void creat(list *heap)
+{
+	heap->next=0;
+	heap->last=0;
+}
+void heap_in(list *heap,int a)//头插
+{
+    list *temp=(list *)malloc(sizeof(list));
+	 if(!temp)
+	 {
+		 fprintf(stdout,"chucuo");
+		 exit(1);
+	 }
+	 temp->a=a;
+	 temp->next=heap->next;
+	 heap->next=temp;
+}
+void tail_in(list *heap,int a)//尾插
+{
+    list *temp=(list *)malloc(sizeof(list));
+	 if(!temp)
+	 {
+		 fprintf(stdout,"chucuo");
+		 exit(1);
+	 }
+	 temp->a=a;
+	 temp->next=NULL;
+//找尾结点      既是p2
+	 list *p1=heap,*p2;
+	 while(p1)
+	 {   
+		 p2=p1;
+		 p1=p1->next;
+	 }
+	 p2->next=temp;
+}
+int delete_out(list *heap)//头删
+{
+	if(heap->next)
+	{
+			  int a=heap->next->a;
+			  list *temp=heap->next;
+		heap->next=heap->next->next;
+
+		free(temp);
+		return a;
+	}
+	else
+	{
+		puts("无结点啊");
+	}
+}
+
+int tail_out(list *heap)//尾删
+{
+	if(heap->next)
+	{
+
+	//找结点    p1 p2 p3 依次为前中后；删除的是p2
+	 list *p1=heap,*p2=heap->next,*p3=heap->next->next;
+	 int a;
+		 while(p3)
+		 { 	
+			 p1=p2;
+			 p2=p3;
+			 p3=p3->next;
+		 }
+		a=p2->a;
+		p1->next=0;				 
+		free(p2);
+		return a;
+		}
+	else
+	{
+		puts("无结点啊");
+	}
+
+}
+void add(list *heap,int a,int b)//把b插入到a数据之后
+{
+	list *p=heap;
+	if(!p->next)
+	{
+		puts("空表啊");
+			return;
+	}
+    p=p->next;
+    while(p && p->a!=a)//p为指向含有a的数据指针
+		p=p->next;
+	
+	if(p)
+	{
+    list *temp=(list *)malloc(sizeof(list));
+		 if(!temp)
+		 {
+			 fprintf(stdout,"chucuo");
+			 exit(1);
+		 }
+		 temp->a=b;
+         temp->next=p->next;
+		 p->next=temp;
+	}
+	else puts("没有找到含有a数据的结点");
+}
+void deleted(list *heap,int a)//删a
+{
+	if(!heap->next)
+	{
+		puts("空表啊");
+		return;
+	}	
+//找结点    p1 p2  依次为前后；删除的是p2
+	 list *p1=heap,*p2=heap->next,*p3=heap->next->next;
+
+		 while(p2 && p2->a!=a)
+		 {
+			 p1=p2;
+			 p2=p2->next;
+		 }
+
+    if(p2)
+	{
+		p1->next=p2->next;
+        
+		free(p2);
+	}	
+	else
+	{
+		puts("无结点a啊");
+	}
+}
+void bianli(list *heap)//遍历
+{
+   list	*p=heap->next;
+	while(p)
+	{
+		printf("%d->",p->a);
+		p=p->next;
+	}
+	puts("NULL");
+}
+void fanzhuan(list *heap)//翻转单链表，对于length>=1个结点的表，实际属于头插法
+{ 
+	list *temp=heap->next,*p=heap->next,*temp2;
+	if(temp)
+	{
+		p=p->next;
+		temp->next=0;//作为尾巴
+	   while(p)
+	   {   
+	       temp2=p->next;//保留下一个
+  		   p->next=temp;//p做头了
+		   temp=p;//即是temp为头
+		   p=temp2;//p向下一个移动
+	   }
+	}
+	else puts("空表啊");
+   heap->next=temp;
+}
+void invert(list *lead)//翻转单链表，对于length>=1个结点的表，实际属于头插法
+{
+	list *middle,*trail;
+	list *lea=lead;
+	lead=lead->next;
+	middle=NULL;
+	while(lead)
+	{
+		trail=middle;
+		middle=lead;
+		lead=lead->next;
+		middle->next=trail;
+	}
+	lead=lea;
+	lead->next=middle;
+}
+void chuanjie(list *heap1,list *heap2)///串接到heap1上
+{
+	if(!heap1->next)heap1->next=heap2->next;
+	else
+	{
+	
+		//找尾结点既是p2
+       		 list *p1=heap1,*p2;
+		 while(p1)
+		 {   
+			 p2=p1;
+			 p1=p1->next;
+		 }
+		 puts("dddddd");
+		  bianli(heap1);
+	    heap_in(heap2,5);//头插
+		 p2->next=heap2->next;	
+		  bianli(heap1);
+	}
+}
+void copy(list *heap1,list *heap2)//复制链表
+{
+    list *p=heap1->next,*p2=heap2;
+    list *temp;
+	while(p)
+	{
+		temp=(list *)malloc(sizeof(list));
+		temp->a=p->a;
+		p2->next=temp;
+		p2=temp;
+		p=p->next;
+	}
+	p2->next=NULL;
+  
+}

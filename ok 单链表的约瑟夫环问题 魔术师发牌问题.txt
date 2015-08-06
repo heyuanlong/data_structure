@@ -1,0 +1,114 @@
+#include <stdio.h>///带头结点的单链表（这个结点是无值的）
+#include <string.h>/////////////////////约瑟夫环问题，第十三个是不死的
+#include<stdlib.h>
+
+typedef struct lis
+{
+	int a; 
+  struct lis *next;
+  struct lis *last;
+}list;
+
+void creat(list *heap);//创建
+void heap_in(list *heap,int a);//头插（插入head的下一个位置）    其实只要在头插这里改改，就可以不用首尾连接函数了
+void shouweilian(list *heap);//首尾连接
+void zhuyao(list *heap);//主要的程序
+
+void main()
+{
+	list heap;
+	creat(&heap);
+	for(int i=0;i<13;++i)heap_in(&heap,0);//头插
+    shouweilian(&heap);//首尾连接，构成链表循环
+    zhuyao(&heap);//主要的程序
+
+
+list *p;
+p=heap.next;
+for(i=1;i<=13;++i)
+		{
+	printf("%d  ",p->a);
+	p=p->next;
+	}
+
+
+}
+
+void creat(list *heap)
+{
+	heap->next=0;
+	heap->last=0;
+}
+void heap_in(list *heap,int a)//头插
+{
+    list *temp=(list *)malloc(sizeof(list));
+	 if(!temp)
+	 {
+		 fprintf(stdout,"chucuo");
+		 exit(1);
+	 }
+	 temp->a=a;
+	 temp->next=heap->next;
+	 heap->next=temp;
+}
+void shouweilian(list *heap)//首尾连接
+{
+
+
+			//找尾结点      既是p2   兼并首位连接
+				 list *p1=heap,*p2;
+				 while(p1)
+				 {   
+					 p2=p1;
+					 p1=p1->next;
+				 }
+			p2->next=heap->next;
+
+}
+void zhuyao(list *heap)//主要的程序
+{
+list *p=heap->next;
+int cout=0;
+while(1)
+{
+		for(int i=1;i<=3;++i)
+		{
+			if(p->a != 0)--i;//说明这个点已经被去除了！	
+			if(i==3)
+			{
+					p->a=cout+1;///第n个被去除的人
+				
+			}
+			p=p->next;	
+		}
+		if(++cout==13)break;
+}
+}
+
+
+
+
+void zhuyao(list *heap)//主要的程序   稍微改改就成了魔术师发牌问题了
+{////////////////////////约瑟夫环是固定第3个人，而魔术师发牌是第cout个，这个cout会增加的
+list *p=heap->next;
+int cout=1;
+while(1)
+{
+		for(int i=1;i<=cout;++i)
+		{
+			if(p->a != 0)--i;	
+			if(i==cout)
+			{
+					p->a=cout;
+				
+			}
+			p=p->next;	
+		}
+		if(++cout==14)break;
+}
+}
+
+
+
+
+

@@ -1,0 +1,105 @@
+/*链表的栈和队列完全在单链表那里被包含了
+
+这里只是动态数组的栈和非循环队列；
+并且只要在栈的deleted函数改变一下输出数据的方式就可以改为非循环
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAXzhansize 30
+typedef int type;
+
+typedef struct name
+{
+   int top;
+   int base;
+   type *zhang;
+
+}zhan;
+
+type deletedzhan(zhan *s);/////////////////////////////////////出栈
+type deleteddui(zhan *s);//////////////////////////////////////出队列
+void add(zhan*s,type item);//进栈
+type *creat(zhan *s);//创栈
+void qingkong(zhan *s);//清空栈
+void xiaohui(zhan *s);//销毁栈
+void bianli(zhan *s);///遍历栈
+
+
+void main()
+{
+  zhan s;
+  s.zhang=creat(&s);
+  add(&s,1);
+  add(&s,2);
+  add(&s,3);
+bianli(&s);
+
+deleteddui(&s);
+bianli(&s);
+
+qingkong(&s);
+bianli(&s);
+
+xiaohui(&s);
+}
+
+
+
+type *creat(zhan *s)
+{
+	s->top=-1;
+	s->base=0;
+	type *p=(type*)malloc(sizeof(type) * MAXzhansize);
+	return p;
+	
+}
+void add(zhan*s,type item)
+{
+    if(s->top>=MAXzhansize)    
+    {
+    printf("jjjjjjjjjj\n");
+        exit(1);
+    }
+       s->zhang[++s->top]=item;
+
+}
+
+type deletedzhan(zhan *s)
+{
+    if(s->top<s->base)
+    {
+    printf("kkkkkkkkkkkkkk\n");
+        exit(1);
+    }
+    return s->zhang[s->top--];
+}
+type deleteddui(zhan *s)
+{
+    if(s->base > s->top)
+    {
+    printf("kkkkkkkkkkkkkk\n");
+        exit(1);
+    }
+    return s->zhang[s->base++];
+}
+void qingkong(zhan *s)
+{
+	s->top=-1;	
+	s->base=0;
+}
+void xiaohui(zhan *s)
+{
+	free(s->zhang);
+}
+void bianli(zhan *s)///遍历栈
+{
+	int temp=s->base;
+	for ( ;s->base<=s->top; ++s->base)
+	{
+		printf("%d\n",s->zhang[s->base] );
+	}
+	s->base=temp;
+}
