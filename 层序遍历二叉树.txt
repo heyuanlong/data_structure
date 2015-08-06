@@ -1,0 +1,83 @@
+//层序遍历：
+/*-------------------------------------------------------------------------
+  1.使用队列，
+  2.只要有儿子，就进，先左儿子或右儿子都ok
+  3.进完儿子后，就调用对头元素，输出它，并让其儿子进队列
+  4.当队列为空时候，就扫描完毕了
+*/
+//----------------------------------------------------------------------------
+#include <stdio.h>
+#include <malloc.h>
+#include <stdlib.h>
+#include <iostream.h>
+
+#define MaxSize 100
+#define max 100
+typedef char ElemType;
+typedef struct node
+{
+  ElemType data;        //数据元素
+  struct node *lchild;    //指向左孩子
+  struct node *rchild;    //指向右孩子
+} BTNode;
+
+void CreateBTNode(BTNode *&b,char *str);
+void lxu(BTNode* head); //后序
+
+void main()
+{
+  BTNode *b;
+  CreateBTNode(b,"A(B(D,E(H(J,K(L,M(,N))))),C(F,G(,I)))"); 
+ //CreateBTNode(b,"A(B(C(D,),E(F,G)),I(,J))"); 
+  lxu(b);cout<<endl; 
+}
+void CreateBTNode(BTNode *&b,char *str)   ///////////////////////////////////////////////////由str串创建二叉链
+{
+  BTNode *St[MaxSize],*p=NULL;
+  int top=-1,k,j=0;  
+  char ch;
+  b=NULL;       //建立的二叉树初始时为空
+  ch=str[j];
+  while (ch!='\0')  //str未扫描完时循环
+  {
+        switch(ch) 
+    {
+    case '(':top++;St[top]=p;k=1; break;    //为左节点
+    case ')':top--;break;
+    case ',':k=2; break;                        //为右节点
+    default:p=(BTNode *)malloc(sizeof(BTNode));
+      p->data=ch;p->lchild=p->rchild=NULL;
+              if (b==NULL)                    //p指向二叉树的根节点
+            b=p;
+          else                //已建立二叉树根节点
+          { 
+            switch(k) 
+            {
+            case 1:St[top]->lchild=p;break;
+            case 2:St[top]->rchild=p;break;
+            }
+          }
+    }
+    j++;
+    ch=str[j];
+  }
+}
+
+//---------------------------------------------------------------------------------------//
+void lxu(BTNode* head)
+{
+BTNode *st[MaxSize],*p=head;
+  int dui_front=0,dui_rear=0;
+
+    st[dui_rear++ % MaxSize]=head;
+   while(true){
+         p=st[dui_front++ % MaxSize];//调用队头，并且输出
+         cout<<p->data;
+        if(p->lchild)st[dui_rear++ % MaxSize]=p->lchild;//进
+        if(p->rchild)st[dui_rear++ % MaxSize]=p->rchild;
+
+        if(dui_front >= dui_rear)break;//返回到了树顶了
+    }
+}
+//---------------------------------------------------------------------------------------//
+
