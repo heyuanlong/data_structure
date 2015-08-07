@@ -1,0 +1,147 @@
+//以下均是模拟系统调用机制
+//非递归前序遍历：
+//   进栈的同时输出
+//   有左儿子进，无左二子出栈
+//   出栈时调用右儿子，进栈调左儿子
+//
+//非递归中序遍历：
+//  有左儿子进，无左二子出栈
+//  出栈时输出 and 调右儿子
+//  进栈调左儿子
+//
+//非递归后序遍历：
+//  有左儿子进，无左二子调用右儿子
+//  无左右儿子或左右儿子均被访问过了，出栈并输出
+//
+
+#include <stdio.h>
+#include <malloc.h>
+#include <stdlib.h>
+#include <iostream.h>
+
+#define MaxSize 100
+#define max 100
+typedef char ElemType;
+typedef struct node
+{
+  ElemType data;        //数据元素
+  struct node *lchild;    //指向左孩子
+  struct node *rchild;    //指向右孩子
+} BTNode;
+
+void CreateBTNode(BTNode *&b,char *str);
+void qianxu(BTNode* head); //前序
+void zhongxu(BTNode* head); //中序
+void houxu(BTNode* head); //后序
+void main()
+{
+  BTNode *b;
+ // CreateBTNode(b,"A(   B( D,E(H(J,K(L,M(,N)))) ),   C(F,G(,I))   )"); 
+ CreateBTNode(b,"A(   B( C(D,) ,E(F,G)),I(,J))"); 
+
+  qianxu(b);cout<<"\n";
+  zhongxu(b);cout<<"\n";
+  houxu(b);cout<<"\n";
+
+}
+void CreateBTNode(BTNode *&b,char *str)   ///////////////////////////////////////////////////由str串创建二叉链
+{
+  BTNode *St[MaxSize],*p=NULL;
+  int top=-1,k,j=0;  
+  char ch;
+  b=NULL;       //建立的二叉树初始时为空
+  ch=str[j];
+  while (ch!='\0')  //str未扫描完时循环
+  {
+        switch(ch) 
+    {
+    case '(':top++;St[top]=p;k=1; break;    //为左节点
+    case ')':top--;break;
+    case ',':k=2; break;                        //为右节点
+    default:p=(BTNode *)malloc(sizeof(BTNode));
+      p->data=ch;p->lchild=p->rchild=NULL;
+              if (b==NULL)                    //p指向二叉树的根节点
+            b=p;
+          else                //已建立二叉树根节点
+          { 
+            switch(k) 
+            {
+            case 1:St[top]->lchild=p;break;
+            case 2:St[top]->rchild=p;break;
+            }
+          }
+    }
+    j++;
+    ch=str[j];
+  }
+}
+//---------------------------------------------------------------------------------------//
+void qianxu(BTNode* head)
+{
+	  BTNode *st[MaxSize],*p=head;
+	  int top=-1;
+	  do{
+		  while(p)//   有左儿子进，无左二子出栈
+		  {
+		  	cout<<p->data;
+		  	st[++top]=p;//   进栈的同时输出
+		  	p=p->lchild;
+		  }
+		  p=st[top--];//   出栈时调用右儿子，进栈调左儿子
+		  p=p->rchild;
+	  }while(top != -1 || p != NULL);
+}
+//---------------------------------------------------------------------------------------//	  
+void zhongxu(BTNode* head)
+{
+	  BTNode *st[MaxSize],*p=head;
+	  int top=-1;
+	  do{
+		  while(p)//   有左儿子进，无左二子出栈
+		  {
+		  	st[++top]=p;
+		  	p=p->lchild;
+		  }
+		  p=st[top--];//   出栈时调用右儿子，进栈调左儿子
+		  cout<<p->data;//   出栈的同时输出
+		  p=p->rchild;
+	  }while(top != -1 || p != NULL);
+}	
+//---------------------------------------------------------------------------------------//
+void houxu(BTNode* head)
+{
+  BTNode *st[MaxSize],*p=head;
+  int top=-1;
+   while(true){
+		    do{
+				  while(p)//   有左儿子进，无左子调用右儿子
+				  {
+				  	st[++top]=p;
+				  	p=p->lchild;
+				  }
+				  p=st[top];//   无左子调用右儿子
+				  p=p->rchild;
+		    }while(p != NULL); 
+
+		    while(true){
+			  cout<<st[top--]->data;//循环表示是从右儿子返回，则继续出栈
+			  if( top == -1)break;//必须的
+			  if (st[top+1] != st[top]->rchild)break;//否则表明是从左儿子返回
+		   }
+		   if(top == -1)break;//必须的
+		   p=st[top]->rchild;
+     }		
+}
+//---------------------------------------------------------------------------------------//
+/*
+ABDEHJKLMNCFGI
+DBJHLKMNEAFCGI
+DJLNMKHEBFIGCA
+Press any key to continue
+
+
+ABCDEFGIJ
+DCBFEGAIJ
+DCFGEBJIA
+Press any key to continue
+*/

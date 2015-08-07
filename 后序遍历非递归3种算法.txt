@@ -1,0 +1,190 @@
+//非递归后序遍历：
+//-------------------------------------------------------------------------
+//（不会破坏树）
+//  有左儿子进，无左二子调用右儿子
+//  无左右儿子或左右儿子均被访问过了，出栈并输出
+//--------------------------------------------------------------------------
+// 使用栈（不会破坏树）
+// 右儿子先进栈道，再左儿子进
+// 儿子进栈后，使用顶点元素，  a.元素无子或有子但是已被访问过了，出栈道，标记该元素
+//                             b.有子and未被访问过的
+//栈道空了->ok
+//---------------------------------------------------------------------------
+// 使用栈（会破坏树）
+// 右儿子先进栈道，再左儿子进
+// 儿子进栈后，使用顶点元素，  a.元素无子,出栈道，设置父的一个子为NULL；
+//                             b.有子，进栈道
+//栈道空了->ok
+//----------------------------------------------------------------------------
+#include <stdio.h>
+#include <malloc.h>
+#include <stdlib.h>
+#include <iostream.h>
+
+#define MaxSize 100
+#define max 100
+typedef char ElemType;
+typedef struct node
+{
+  ElemType data;        //数据元素
+  struct node *lchild;    //指向左孩子
+  struct node *rchild;    //指向右孩子
+} BTNode;
+
+void CreateBTNode(BTNode *&b,char *str);
+void houxu(BTNode* head); //后序
+void houxu1(BTNode* head); //后序
+void houxu2(BTNode* head);//后序
+
+void main()
+{
+  BTNode *b;
+  //CreateBTNode(b,"A(B(D,E(H(J,K(L,M(,N))))),C(F,G(,I)))"); 
+ CreateBTNode(b,"A(B(C(D,),E(F,G)),I(,J))"); 
+
+
+  houxu(b);cout<<endl;
+  houxu1(b);cout<<endl;
+  houxu2(b);cout<<"\n"; 
+}
+void CreateBTNode(BTNode *&b,char *str)   ///////////////////////////////////////////////////由str串创建二叉链
+{
+  BTNode *St[MaxSize],*p=NULL;
+  int top=-1,k,j=0;  
+  char ch;
+  b=NULL;       //建立的二叉树初始时为空
+  ch=str[j];
+  while (ch!='\0')  //str未扫描完时循环
+  {
+        switch(ch) 
+    {
+    case '(':top++;St[top]=p;k=1; break;    //为左节点
+    case ')':top--;break;
+    case ',':k=2; break;                        //为右节点
+    default:p=(BTNode *)malloc(sizeof(BTNode));
+      p->data=ch;p->lchild=p->rchild=NULL;
+              if (b==NULL)                    //p指向二叉树的根节点
+            b=p;
+          else                //已建立二叉树根节点
+          { 
+            switch(k) 
+            {
+            case 1:St[top]->lchild=p;break;
+            case 2:St[top]->rchild=p;break;
+            }
+          }
+    }
+    j++;
+    ch=str[j];
+  }
+}
+//---------------------------------------------------------------------------------------//
+void houxu(BTNode* head)
+{
+  BTNode *st[MaxSize],*p=head;
+  int top=-1;
+   while(true){
+        do{
+          while(p)//   有左儿子进，无左子调用右儿子
+          {
+            st[++top]=p;
+            p=p->lchild;
+          }
+          p=st[top];//   无左子调用右儿子
+          p=p->rchild;
+        }while(p != NULL); 
+
+         while(true){
+         cout<<st[top--]->data;//循环表示是从右儿子返回，则继续出栈
+        if( top == -1)break;//必须的
+        if (st[top+1] != st[top]->rchild)break;//否则表明是从左儿子返回
+       }
+       if(top == -1)break;//必须的
+       p=st[top]->rchild;//是从右儿子返回的
+     }    
+
+}
+
+//---------------------------------------------------------------------------------------//
+int no_visit(BTNode** a,int j,BTNode* b);
+void houxu1(BTNode* head)
+{
+  BTNode *st[MaxSize],*p=head;
+  int top=-1,topmark;
+  BTNode *visited[MaxSize];int v=0;//visited数组用于存放已经访问过的结点
+
+    st[++top]=p;
+   while(true){
+
+      while(p->lchild || p->rchild)
+      { 
+        topmark=top;//右儿子先进，再左儿子进
+      if(p->rchild && no_visit(visited,v,p->rchild))st[++top]=p->rchild;//已被访问的就不要进栈了
+      if(p->lchild && no_visit(visited,v,p->lchild))st[++top]=p->lchild;
+        if(topmark==top)//有儿子但是均被访问过了
+        {
+              p=st[top--];
+              cout<<p->data;
+	      visited[v++]=p;
+
+             if(top==-1)goto mark;//返回到了树顶了
+             p=st[top];//继续返回
+        }
+      p=st[top];
+      }//以下是无儿子情况
+      p=st[top--];
+      cout<<p->data;
+      visited[v++]=p;
+      if(top==-1)break;//当树只有一个元素既是树顶，就会执行这条语句
+      p=st[top];//继续返回
+
+    }
+    mark:;
+}
+int no_visit(BTNode** a,int j,BTNode* b)//判断是否被访问过
+{
+  for (int i = 0; i < j; ++i)
+    if(a[i]==b)return 0;
+ 
+  return 1;
+}
+
+//---------------------------------------------------------------------------------------//
+void houxu2(BTNode* head)
+{int k;
+BTNode *st[MaxSize],*p=head;
+  int top=-1;
+
+    st[++top]=p;
+   while(true){
+      while(p->lchild || p->rchild)
+      { //只有有儿子就行  ，就得进栈，先右儿子，再左儿子
+        if(p->rchild )st[++top]=p->rchild;
+        if(p->lchild )st[++top]=p->lchild;
+        p=st[top];
+      }
+      //以下是无儿子情况
+      p=st[top--];  
+     cout<<p->data;//无儿子就出栈
+
+          if(top!=-1)//一个儿子被访问过了，这个儿子就消失吧。888
+          {
+            if(st[top]->rchild==p)
+                st[top]->rchild=NULL;///使其变成无儿子情况
+           if(st[top]->lchild==p)
+              st[top]->lchild=NULL;///使其变成无儿子情况
+          }
+          if(top > 0 ){
+            if(st[top-1]->rchild==p)
+              st[top-1]->rchild=NULL;///使其变成无儿子情况
+            if(st[top-1]->lchild==p)
+              st[top-1]->lchild=NULL;//使其变成无儿子情况        
+          }
+          free(p);//886
+          if(top==-1)break;//返回到了树顶了
+      p=st[top];
+    }
+}
+
+//---------------------------------------------------------------------------------------//
+
