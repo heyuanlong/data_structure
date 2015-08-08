@@ -1,0 +1,39 @@
+//////冒泡排序
+void BubbleSort(int *a,int length)
+{
+    int i,j,k;
+    for(i=0;i<length;i++)
+    {
+      k=i;
+      for(j=0;j<length-i;j++)
+      {
+
+           if(a[k]>a[k+1])//////相邻的比较交换
+              {
+              t=a[k],a[k]=a[k+1],a[k+1]=t;
+              }
+           k++;
+      }
+    }
+} 
+
+
+///////////选择排序
+void  SelectSort(int *arr,int length){
+  int min;
+  for(int i=0;i<length-1;i++)
+  {
+    min=i;
+      for(int j=i+1;j<length;j++)
+      {
+        if(arr[min]>arr[j])
+          min=j;  
+      }
+      if(i<min)/////////下面的三条语句实现交换
+      {
+        arr[i]+=arr[min];
+        arr[min]=arr[i]-arr[min];
+        arr[i]-=arr[min];
+      }
+  }
+}

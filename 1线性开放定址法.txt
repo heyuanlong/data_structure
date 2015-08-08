@@ -1,0 +1,129 @@
+//////////////////线性开放定址法（处理冲突的方法）
+//
+// 假设第一次输入ad，那么这个字符串的num（字符串所对应的数字和）就是197，它的哈希值是197%TABLE_SIZE，它的查找长度是1
+//假设第二次 输入bc,那么这个字符串的num就是197，它的哈希值是197%TABLE_SIZE，它的查找长度是2.
+//
+//长度的值表示它的哈希值所示的位置与它所存放的位置的距离减一.
+//
+
+#include<stdio.h>
+#include<string.h>
+#include<conio.h>
+#include<stdlib.h>
+#define MAX_CHAR 20                         //人名长度      
+#define TABLE_SIZE 30                      //表长度      
+
+typedef struct 
+{
+	char key[MAX_CHAR];//人名
+	int num;////////////对应数字和
+	int len;///////////查找长度
+	//other field
+}element;
+element hash_table[TABLE_SIZE];
+
+void init_table(element ht[]);///////////////////初始化为NULL
+int transform(char *key);/////////////////////////获取对应的数字和
+int hash(char *key);////////////////////////////散列函数
+void insert();//////////////////////////////////插入
+void linear_insert(element item,element ht[]);//插入
+void Display(); /////////////////////////////// 显示哈希表 
+
+void init_table(element ht[])
+{
+	
+	for (int i = 0; i < TABLE_SIZE; ++i)
+		ht[i].key[0]=NULL;
+}
+
+int transform(char *key)
+{
+	int number = 0;
+	while(*key)
+		number += *key++;
+	return number;
+}
+
+int hash(char *key)
+{
+	return (transform(key) % TABLE_SIZE);
+}
+
+void linear_insert(element item,element ht[])
+{
+	int i;
+	int length=1;///////////////////////////记录查找长度
+	int hash_value=hash(item.key);
+	i=hash_value;
+	while(strlen(ht[i].key))//////////////////////非空情况
+	{
+		if(!strcmp(ht[i].key,item.key))
+		{
+			fprintf(stderr, "已经存在的了\n" );
+			exit(1);
+		}
+		i=(i+1) % TABLE_SIZE;////////////////////////////
+		++length;
+		if(i==hash_value)
+		{
+			fprintf(stderr, "哈希表已满\n" );
+			exit(1);
+		}
+	}
+	item.len=length;
+  ht[i]=item;/////////////////////////////////已经是空的情况
+}
+
+void   Display() // 显示哈希表      
+{int i;
+ printf("\n\n地址\t关键字\t查找长度\t姓名\n"); //显示的格式
+
+	for(i=0; i<TABLE_SIZE; i++)
+	{
+	   printf("%d ",i);
+	   printf("\t%d ",hash_table[i].num);
+	   printf("\t%d ",hash_table[i].len);
+	   printf("\t %s ",hash_table[i].key);
+	   printf("\n");
+	}
+}
+
+void insert()
+{
+	element temp;
+     printf("%s\n", "输入人名");
+     scanf("%s",temp.key);
+     temp.num=transform(temp.key);
+
+     linear_insert(temp, hash_table);
+}
+
+
+void main()
+{
+	init_table(hash_table);
+       char ch1;
+printf("\n                           哈希表的建立和查找\n");
+   printf("               *-------------------------------------------*\n");
+   printf("               |              D. 显示哈希表                |\n");
+   printf("               |              F. 插入                      |\n");
+   printf("               |              Q. 退出                      |\n");
+   printf("               *-------------------------------------------*\n");
+                    
+while(1)
+{
+printf("\n       Option-:");
+fflush(stdin);
+    ch1=getchar();
+        if (ch1=='D'||ch1=='d')
+    Display();  
+   else if (ch1=='F'||ch1=='f')
+    insert();
+   else if (ch1=='Q'||ch1=='q')
+    return;
+   else
+   {
+    printf("\n请输入正确的选择!");
+    }
+}
+}

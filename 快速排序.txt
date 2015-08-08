@@ -1,0 +1,26 @@
+
+//--------快速排序算法-----------真的很快啊----
+#define KeyType int
+void QuickSort(KeyType R[],int s,int t)
+{
+	int i=s,j=t;
+	KeyType tmp;
+	if (s<t) 				//区间内至少存在两个元素的情况
+	{
+		tmp=R[s];			//用区间的第1个元素作为基准
+		while (i!=j)		        //从区间两端交替向中间扫描,直至i=j为止
+		{
+			while (j>i && R[j]>=tmp) 
+				j--;		//从右向左扫描,找第1个小于tmp的R[j]
+			R[i]=R[j];		//找到这样的R[j],R[i]和R[j]交换
+			while (j>i && R[i]<=tmp) 
+				i++;		//从左向右扫描,找第1个大于tmp的元素R[i]
+			R[j]=R[i];		//找到这样的R[i],R[i]和R[j]交换
+		}
+		R[i]=tmp;
+		QuickSort(R,s,i-1);	//对左区间递归排序
+		QuickSort(R,i+1,t);	//对右区间递归排序
+	}
+}
+
+

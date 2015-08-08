@@ -1,0 +1,147 @@
+//////////////////拉链法（处理冲突的方法）
+//
+// 假设第一次输入ad，那么这个字符串的num（字符串所对应的数字和）就是197，它的哈希值是197%TABLE_SIZE，它的查找长度是1
+//假设第二次 输入bc,那么这个字符串的num就是197，它的哈希值是197%TABLE_SIZE，它的查找长度是2.
+//
+//长度的值表示它的哈希值所对应的链中的位置，
+//比如一个字符串的哈希值是197%TABLE_SIZE(这个哈希值对应一条动态链)长度为2，表示这个字符串在这条连的第二个结点里
+//
+
+///////////////////////拉链法
+#include<stdio.h>
+#include<string.h>
+#include<conio.h>
+#include<stdlib.h>
+
+#define MAX_CHAR 20                         //人名长度      
+#define TABLE_SIZE 30                      //表长度      
+#define IS_FULL(ptr) (!(ptr))
+
+typedef struct 
+{
+	char key[MAX_CHAR];//人名
+	int num;////////////对应数字和
+	int len;///////////查找长度
+	//other field
+}element;
+
+typedef struct list *list_pointer;
+struct list
+{
+	element item;
+	list_pointer link;
+};
+list_pointer hash_table[TABLE_SIZE];
+
+void init_table(element ht[]);///////////////////初始化为NULL
+int transform(char *key);/////////////////////////获取对应的数字和
+int hash(char *key);////////////////////////////散列函数
+void insert();//////////////////////////////////插入
+void chain_insert(element item,element ht[]);//插入
+void Display(); /////////////////////////////// 显示哈希表 
+
+void init_table(list_pointer ppp[])
+{
+	
+	for (int i = 0; i < TABLE_SIZE; ++i)
+		ppp[i]=NULL;
+}
+
+int transform(char *key)
+{
+	int number = 0;
+	while(*key)
+		number += *key++;
+	return number;
+}
+
+int hash(char *key)
+{
+	return (transform(key) % TABLE_SIZE);
+}
+
+void chain_insert(element item,list_pointer ht[])
+{
+	int hash_value = hash(item.key);
+	int length=1;
+	list_pointer ptr,trail=NULL,lead=ht[hash_value];//trail作为前面的尾，lead作为后面的头
+
+	for (  ; lead ; trail=lead,lead=lead->link,++length )////跑向尾巴
+	  if (  !strcmp(lead->item.key,item.key)  )
+	  {
+	  	 fprintf(stderr, "%s\n", "已经存在的了" );
+	  	 exit(1);
+	  }
+	ptr = (list_pointer)malloc(sizeof(struct list));
+    if (IS_FULL(ptr))
+    {
+    	fprintf(stderr, "%s\n", "空间分配失败");
+    	exit(1);
+    }
+	item.len=length;
+    ptr->item=item;
+    ptr->link=NULL;
+    if (trail)
+    	trail->link=ptr;
+    else
+    	ht[hash_value]=ptr;
+}
+
+void insert()
+{
+	element temp;
+     printf("%s\n", "输入人名");
+     scanf("%s",temp.key);
+     temp.num=transform(temp.key);
+
+     chain_insert(temp, hash_table);
+}
+
+
+void   Display() // 显示哈希表      
+{int i;
+ printf("\n\n地址\t关键字\t查找长度\t姓名\n"); //显示的格式
+list_pointer pt;
+	for(i=0; i<TABLE_SIZE; i++)
+	{
+		pt=hash_table[i];
+		for (; pt ; pt=pt->link)
+		{
+	   printf("%d ",i);
+	   printf("\t%d ",(pt->item).num);
+	   printf("\t%d ",(pt->item).len);
+	   printf("\t %s ",(pt->item).key);
+	   printf("\n");
+		}
+	}
+}
+
+
+void main()
+{
+	init_table(hash_table);
+       char ch1;
+printf("\n                           哈希表的建立和查找\n");
+   printf("               *-------------------------------------------*\n");
+   printf("               |              D. 显示哈希表                |\n");
+   printf("               |              F. 插入                      |\n");
+   printf("               |              Q. 退出                      |\n");
+   printf("               *-------------------------------------------*\n");
+                    
+while(1)
+{
+printf("\n       Option-:");
+fflush(stdin);
+    ch1=getchar();
+        if (ch1=='D'||ch1=='d')
+    Display();  
+   else if (ch1=='F'||ch1=='f')
+    insert();
+   else if (ch1=='Q'||ch1=='q')
+    return;
+   else
+   {
+    printf("\n请输入正确的选择!");
+    }
+}
+}
