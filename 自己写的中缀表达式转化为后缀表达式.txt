@@ -1,0 +1,114 @@
+(2+3*4+5)*(2+3)
+234*+5+23+*       234*+5+23+*
+Press any key to continue
+
+//是数字就直接printf，是符号就先放入栈中，当遇到的下一个符号的优先级小于等于栈顶的优先级时，便弹出栈顶。
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAXzhansize 30
+char stack[MAXzhansize];//
+char deleted(int *top);
+void add(int *top,char item);
+
+void main()
+{
+  int a[128];
+  a['+']=1;///预备优先级
+  a['-']=1;
+  a['*']=2;
+  a['/']=2;
+  a['%']=2;
+  a['(']=0;
+  a[')']=0;
+  a[',']=-1;
+  
+int top=-1,j=0,toptemp;//top始终是指向栈顶元素的
+char b[30];/////原始字符
+char c[30];////结果字符
+gets(b);//  (2+3*4+5)*(2+3)
+  
+add(&top,',');// 最低优先级a[',']=-1;
+
+for(int i=0;b[i]!='\0';++i)
+{   
+   if(!isdigit( b[i]) )///不是数字符号时，若是数字就直接加入数组c中
+           {    
+		  if(b[i] == '(' )//前两个if语句 处理特殊情况 一对括号
+		  {
+			add( &top, b[i] );//直接加到栈里'('
+			continue;
+		  }
+
+		 if(b[i] == ')' )//处理一对括号      
+		  {
+			 while( stack[top] != '(' )///把符号加入数组c中
+			 {
+				c[j++]=deleted(&top);
+				printf("%c",c[j-1]);
+			}
+				deleted(&top);//除掉一个'('
+				continue;
+		  }
+
+                  if(a[ b[i] ] > a[ stack[top] ])
+        ////当前的符号优先级大于栈顶的符号是放入，，否则弹出栈顶..........
+                    {
+                        add( &top, b[i] );
+                        continue;
+                    }
+                    else
+                    {
+                        while(a[ b[i] ] <= a[ stack[top] ])/////把符号加入数组c中直到大于栈顶符号的优先级
+                        {
+                           c[j++]=deleted(&top);
+                            printf("%c",c[j-1]);
+                        }
+                       
+                        add( &top, b[i] );////把当前的符号
+                        continue;
+                    }
+
+            }
+
+   else////是数字符号时
+   {
+     c[j++]=b[i];
+     printf("%c",c[j-1]);
+   }
+
+}
+ while(top !=0 )/////栈里剩余的符号输出
+    {
+        c[j++]=deleted(&top);
+        printf("%c",c[j-1]);
+    }
+
+c[j++]='\0';////补上空字符
+printf("       ");
+puts(c);
+}
+
+
+void add(int *top,char item)
+{
+    if(*top>=MAXzhansize)    
+    {
+    printf("jj\n");
+        exit(1);
+    }
+    stack[++*top]=item;
+
+}
+char deleted(int *top)
+{
+    if(*top==-1)
+    {
+    printf("kkkkkkkkkkkkkk\n");
+        exit(1);
+    }
+    return stack[(*top)--];
+}

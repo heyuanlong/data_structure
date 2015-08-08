@@ -1,0 +1,89 @@
+//后缀成功
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+
+#define element int
+#define MAXzhansize 20
+#define MAXexprsize 100
+
+/////////////+    -    *     /   %  out 数字
+typedef enum{jia,jian,cheng,chu,yu,eos,shuzi}prece;
+
+int stack[MAXzhansize];
+char expr[MAXexprsize]="321+*2* ";
+//char expr[MAXexprsize]="61/3-42*+ ";
+
+void add(int *top,element item);
+element deleted(int *p);
+int eval();
+prece gettoken(char*symbol,int *n);
+
+void main()
+{
+printf("%d",eval());
+}
+int eval()
+{
+	prece token;//符号或数字
+	char symbol;
+	int shu1,shu2;
+	int n=0;
+	int top=-1;
+	token=gettoken(&symbol,&n);
+	while(token!=eos)//不到尾部
+	{
+		if(token==shuzi)
+			add(&top,symbol-'0');//是数字就加进去
+		else
+		{///////////////////////否则调用两个数据与符号操作后，再加进去
+			shu2=deleted(&top);
+			shu1=deleted(&top);
+			switch(token)
+			{
+			case jia:add(&top,shu1+shu2);break;
+			case jian:add(&top,shu1-shu2);break;
+			case cheng:add(&top,shu1*shu2);break;
+			case chu:add(&top,shu1/shu2);break;
+			case yu:add(&top,shu1%shu2);break;
+			}
+		}
+		token=gettoken(&symbol,&n);//下一个
+	}
+   return deleted(&top);
+}
+
+prece gettoken(char*symbol,int *n)
+{
+	*symbol=expr[(*n)++];//下一个字符
+	switch(*symbol)
+	{
+	case'+':return jia;
+	case'-':return jian;
+	case'*':return cheng;
+	case'/':return chu;
+	case'%':return yu;
+	case' ':return eos;
+	default:return shuzi;
+	}
+}
+
+void add(int *top,int item)
+{
+	if(*top>=MAXzhansize)	
+	{
+	printf("jjjjjj\n");
+		exit(1);
+	}
+	stack[++*top]=item;
+
+}
+int deleted(int *top)
+{
+	if(*top==-1)
+	{
+	printf("kkkkkkk\n");
+		exit(1);
+	}
+	return stack[(*top)--];
+}
