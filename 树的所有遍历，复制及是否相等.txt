@@ -1,0 +1,369 @@
+
+#include <stdio.h>
+#include <malloc.h>
+#include <stdlib.h>
+
+#define MaxSize 100
+#define max 100
+typedef char ElemType;
+typedef struct node
+{
+  ElemType data;        //数据元素
+  struct node *lchild;    //指向左孩子
+  struct node *rchild;    //指向右孩子
+} BTNode;
+/////////////////////////////////////////////////////////////////////////////////////////////////先序遍历///////////////////////
+void PreOrder(BTNode *b)      //先序遍历的递归算法
+{
+  if (b!=NULL)  
+  { 
+    printf("%c ",b->data);  //访问根节点
+    PreOrder(b->lchild);  //递归访问左子树
+    PreOrder(b->rchild);  //递归访问右子树
+  }
+}
+void PreOrder1(BTNode *b) //先序遍历的非递归算法
+{///////////////////////////////根据先访问根节点，，再先序访问左子树，，，再先序访问右子树的原则
+  BTNode *St[MaxSize],*p;//////以及根据栈的先进后出原则
+    int top=-1;////////////////所以是右孩子先入栈再左孩子入栈
+    if (b!=NULL) //////////
+    {
+        top++;            //根节点入栈
+        St[top]=b;
+        while (top>-1)        //栈不为空时循环
+        {
+            p=St[top];        //退栈并访问该节点
+            top--;
+            printf("%c ",p->data);
+                if (p->rchild!=NULL)  //先加右孩子入栈
+                {
+                         top++;
+                         St[top]=p->rchild;
+                }
+                if (p->lchild!=NULL)  //左孩子入栈
+                {
+                         top++;
+                         St[top]=p->lchild;
+                }
+        }
+     printf("\n");
+    }
+}
+void PreOrder2(BTNode *b)//////先序遍历的非递归实现
+{
+	BTNode *stack[max],*p;
+	int top;
+	if(b==NULL)return;
+	top=0;
+	p=b;
+	while(!(p==NULL && top==0))
+	{
+		while(p!=NULL)
+		{
+		   printf("%c ",p->data);//一直往左边加，并输出
+					if(top<max-1){stack[top]=p;	top++;}//加入栈道
+					else {printf("栈溢出");return;}
+			p=p->lchild;
+		}
+
+		if(top<=0)return;
+		else
+		{
+			top--;
+			p=stack[top];
+			p=p->rchild;
+		}
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////中序遍历//////////
+void InOrder(BTNode *b)       //中序遍历的递归算法
+{
+  if (b!=NULL)  
+  { 
+    InOrder(b->lchild);   //递归访问左子树
+    printf("%c ",b->data);  //访问根节点
+    InOrder(b->rchild);   //递归访问右子树
+  }
+}
+void InOrder1(BTNode *b) //中序遍历的非递归算法
+{///////////////////////////////////////根据先中序遍历左子树，，再访问根节点，，在中序遍历右子树
+  BTNode *St[MaxSize],*p;////////////////以及根据栈的先进后出原则
+  int top=-1;////////////////////////第二个while一直跑到左子树低端，再输出栈顶元素，再转向右子树
+  if (b!=NULL)
+  {
+    p=b;
+    while (top>-1 || p!=NULL)
+    {
+          while (p!=NULL)
+          {
+            top++;
+            St[top]=p;
+            p=p->lchild;
+          }
+          if (top>-1)
+          {
+            p=St[top];
+            top--;
+            printf("%c ",p->data);
+            p=p->rchild;
+          }
+    }
+    printf("\n");
+  }
+}
+
+//只需将先序遍历的非递归算法PreOrder2中的printf("%c ",p->data);/移到p=chustack[top]和p=p->rchild 之间即可。
+void InOrder2(BTNode *b)//////先序遍历的非递归实现
+{
+	BTNode *stack[max],*p;
+	int top;
+	if(b==NULL)return;
+	top=0;
+	p=b;
+	while(!(p==NULL && top==0))
+	{
+		while(p!=NULL)
+		{
+			////////////////一直往左边加
+					if(top<max-1){stack[top]=p;	top++;}//加入栈道
+					else {printf("栈溢出");return;}
+			p=p->lchild;
+		}
+
+		if(top<=0)return;
+		else
+		{
+			top--;
+			p=stack[top];
+		    printf("%c ",p->data);//回到了父结点输出 
+			p=p->rchild;
+		}
+	}
+}
+/*
+/////////////迭代的中序遍历
+void iter_inorder(tree_pointer node)
+{///////////////////////////////////////*中序遍历总是从左子树的低端开始遍历，
+	///////////////////////////////总是先把左边的结点先压入栈中
+	int top=-1;
+	tree_pointer stack[MAX];///////用栈
+	for(;;)
+	{
+		for(;node;node=node->left_child)add(&top,node);
+		node=deleted(&top);
+		if(!node)break;////////栈为空
+		printf("%d",node->data);
+		node=node->right_child;
+	
+	}
+}
+*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////////后序遍历///////
+void PostOrder(BTNode *b)     //后序遍历的递归算法
+{
+  if (b!=NULL)  
+  { 
+    PostOrder(b->lchild); //递归访问左子树
+    PostOrder(b->rchild); //递归访问右子树
+    printf("%c ",b->data);  //访问根节点
+  }
+}
+void PostOrder1(BTNode *b) //后序遍历的非递归算法
+{////////////////////////////////先中序遍历左子树，，再中序遍历右子树，，再访问根节点
+  BTNode *St[MaxSize];///////////以及根据栈的先进后出原则
+  BTNode *p;/////////////////////////////////////............................
+  int flag,top=-1;            //栈指针置初值
+  if (b!=NULL)
+  {
+        do
+        {
+              while (b!=NULL)         //将t的所有左节点入栈
+              {
+                top++;
+                St[top]=b;
+                b=b->lchild;
+              }
+          p=NULL;             //p指向当前节点的前一个已访问的节点
+          flag=1; 
+              while (top!=-1 && flag)
+              {
+                b=St[top];          //取出当前的栈顶元素
+                    if (b->rchild==p)     //右子树不存在或已被访问,访问之
+                    {
+                      printf("%c ",b->data);  //访问*b节点
+                      top--;
+                      p=b;          //p指向则被访问的节点
+                    }
+                    else
+                    {
+                      b=b->rchild;      //t指向右子树
+                      flag=0; 
+                    }
+              }
+        } while (top!=-1);
+    printf("\n");
+  } 
+}
+
+void PostOrder2(BTNode *b)//////先序遍历的非递归实现
+{
+	BTNode *stack[max],*p;
+	int top;
+	if(b==NULL)return;
+	top=0;
+	p=b;
+	while(!(p==NULL && top==0))
+	{
+		while(p!=NULL)
+		{
+			////////////////一直往左边加
+					if(top<max-1){stack[top]=p;	top++;}//加入栈道
+					else {printf("栈溢出");return;}
+			p=p->lchild;
+		}
+
+		if(top<=0)return;
+		else
+		{
+			top--;
+			p=stack[top];
+		    //printf("%c ",p->data);//
+			p=p->rchild;
+		}
+	}
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////层次遍历序列/////////////
+
+void TravLevel(BTNode *b)////////////////////////层次遍历序列
+{/////////////////////////////////////////////////一层一层的访问
+  BTNode *Qu[MaxSize];        //定义循环队列/////////利用队列的先进先出
+  int front,rear;           //定义队首和队尾指针///////...........
+  front=rear=0;           //置队列为空队列
+      if (b!=NULL) 
+      printf("%c ",b->data);
+            rear++;               //节点指针进入队列
+          Qu[rear]=b;
+                while (rear!=front)         //队列不为空
+                {
+                front=(front+1)%MaxSize;
+                b=Qu[front];          //队头出队列
+                    if (b->lchild!=NULL)      //输出左孩子,并入队列
+                    {
+                      printf("%c ",b->lchild->data);
+                      rear=(rear+1)%MaxSize;
+                      Qu[rear]=b->lchild;
+                    }
+                    if (b->rchild!=NULL)      //输出右孩子,并入队列
+                    {
+                      printf("%c ",b->rchild->data);
+                      rear=(rear+1)%MaxSize;
+                      Qu[rear]=b->rchild;
+                    }
+               } 
+  printf("\n");
+}
+/*///////////二叉树的层序遍历
+void level_order(tree_pointer ptr)
+{
+	int front=rear=0;
+	tree_pointer queue[MAX];//用队列
+	if(!ptr)return;
+	addq(ptr);
+	for(;;)
+	{
+		ptr=deleteq(出队);
+		if(ptr)
+		{
+			printf("%d",ptr->data);
+			if(ptr->left_child)addq(ptr->left_child);
+			if(ptr->right_child)addq(ptr->right_child);
+		}
+		else break;
+	}
+}
+*/
+////////////////////////////////////////////////////////////////////////////////////////////////////树的复制//递归法////////
+BTNode* copy(BTNode* original)//////////////树的复制//递归法
+{
+  BTNode* temp;
+  if(original)
+  {
+    temp=(BTNode*)malloc(sizeof(BTNode));
+    if(temp==NULL)exit(1);
+        temp->lchild=copy(original->lchild);
+        temp->rchild=copy(original->rchild);
+        temp->data=original->data;
+    return temp;
+  }
+  return NULL;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int equal(BTNode* first,BTNode* second)///////////////////////                    判断两棵二叉树是否完全相等///递归法
+{
+  return(  (!first && !second) ||
+    (first && second
+     && (first->data==second->data)
+     && equal(first->lchild,second->lchild)
+     && equal(first->rchild,second->rchild)));
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void CreateBTNode(BTNode *&b,char *str)   ///////////////////////////////////////////////////由str串创建二叉链
+{
+  BTNode *St[MaxSize],*p=NULL;
+  int top=-1,k,j=0;  
+  char ch;
+  b=NULL;       //建立的二叉树初始时为空
+  ch=str[j];
+  while (ch!='\0')  //str未扫描完时循环
+  {
+        switch(ch) 
+    {
+    case '(':top++;St[top]=p;k=1; break;    //为左节点
+    case ')':top--;break;
+    case ',':k=2; break;                        //为右节点
+    default:p=(BTNode *)malloc(sizeof(BTNode));
+      p->data=ch;p->lchild=p->rchild=NULL;
+              if (b==NULL)                    //p指向二叉树的根节点
+            b=p;
+          else                //已建立二叉树根节点
+          { 
+            switch(k) 
+            {
+            case 1:St[top]->lchild=p;break;
+            case 2:St[top]->rchild=p;break;
+            }
+          }
+    }
+    j++;
+    ch=str[j];
+  }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void main()
+{
+  BTNode *b,*c;
+  CreateBTNode(b,"A(B(D,E(H(J,K(L,M(,N))))),C(F,G(,I)))"); 
+
+  printf("层次遍历序列:");
+  TravLevel(b);
+
+  printf("\n\n先序遍历序列:\n");
+  printf("    递归算法:");PreOrder(b);printf("\n");
+  printf("  非递归算法:");PreOrder1(b);
+  printf("  非递归算法:");PreOrder2(b);
+
+  printf("\n\n中序遍历序列:\n");
+  printf("    递归算法:");InOrder(b);printf("\n");
+  printf("  非递归算法:");InOrder1(b);
+  printf("  非递归算法:");InOrder2(b);
+
+  printf("\n\n后序遍历序列:\n");
+  printf("    递归算法:");PostOrder(b);printf("\n");
+  printf("  非递归算法:");PostOrder1(b);
+
+c=copy(b);
+printf("\n\n是相等就显示1  --------》》%d\n", equal(b,c));
+}
+
+

@@ -1,0 +1,51 @@
+（这个是基于有头结点的heap）（使用引用方便多了）
+//删除的结点可用其左子树中的最大元素代替或用其右子树的最小元素代替
+//最大元素在右边，最小元素在最左边
+//最大元素可有左子树，最小元素可有友子树
+
+int DeleteBST(BSTNode *&bt,KeyType k)	
+//在bt中删除关键字为k的节点
+{
+	if (bt==NULL) return 0;		//空树删除失败
+	else 
+	{
+		if (k<bt->key) 
+			return DeleteBST(bt->lchild,k);		//递归在左子树中删除关键字为k的节点
+		else if (k>bt->key) 
+			return DeleteBST(bt->rchild,k);		//递归在右子树中删除关键字为k的节点
+		else									//k=bt->key的情况
+		{
+			Delete(bt);//找到要删除的元素		//调用Delete(bt)函数删除*bt节点
+			return 1;
+		}
+	}
+}
+void Delete(BSTNode *&p)
+//从二叉排序树中删除*p节点
+{
+	BSTNode *q;
+	if (p->rchild==NULL)		//11111111*p节点没有右子树的情况
+	{
+		q=p;p=p->lchild;free(q);
+	}
+	else if (p->lchild==NULL)	//22222222*p节点没有左子树的情况
+	{
+		q=p;p=p->rchild;free(q);
+	}
+	else Delete1(p,p->lchild);	//33333333*p节点既有左子树又有右子树的情况
+}
+void Delete1(BSTNode *p,BSTNode *&r)
+//当被删*p节点有左右子树时的删除过程
+{
+	BSTNode *q;
+	if (r->rchild!=NULL)
+		Delete1(p,r->rchild);	//递归找最右下节点
+	else						//找到了最右下节点*r
+	{
+		p->key=r->key;			//将*r的关键字值赋给*p
+		q=r;					
+		r=r->lchild;			//将*r的双亲节点的右孩子节点改为*r的左孩子节点
+		free(q);				//释放原*r的空间
+	}
+}
+

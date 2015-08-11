@@ -1,0 +1,112 @@
+//赫夫曼编码
+//procedure Huffman（c：具有频率wi的符号ai，i=1，2，3。。。n）
+//F=n个根树的森林，每个根树由单个顶点ai组成并且赋权wi
+// while F不是树
+// begin
+//  把F中满足w（T）>=w(T')的权最小的根树T和T'换成具有新树根的一个树
+//    这个树根以T作为左子树，T'作为右子树
+//    用0标记树根到T的新边，并且用1标记树根到T'的新边
+//  把w（T）+w(T')作为新树的权
+//end
+//
+
+多少个符号
+6
+a b c d e f
+0.08 0.10 0.12 0.15 0.20 0.35
+fdcebaPress any key to continue
+
+
+
+#include <iostream>
+using namespace std;
+
+typedef struct tree* treezhi;
+struct tree
+{
+	char symbol;//符号
+	double quan;	//权
+    treezhi left;
+    treezhi right;
+};
+treezhi constuction(treezhi* zu,int n);//构造赫夫曼树
+int no_tree(treezhi* zu,int n);//非只有一个根树==还是森林
+void traverse(treezhi head);//遍历
+
+int main(int argc, char const *argv[])
+{
+    int i;
+	int n;//符号数量
+	cout<<"多少个符号\n";
+	cin>>n;
+	treezhi* zu=new treezhi[n];
+
+	for ( i = 0; i < n; ++i)
+      zu[i]=new struct tree;
+	for ( i = 0; i < n; ++i)
+		cin>>zu[i]->symbol;//输入符号
+	for ( i = 0; i < n; ++i)
+	{
+        cin>>zu[i]->quan;//小于1输入权
+        zu[i]->left=NULL;
+        zu[i]->right=NULL;
+	}
+	treezhi head=constuction(zu,n);
+	traverse(head);
+	return 0;
+}
+treezhi constuction(treezhi* zu,int n)//构造赫夫曼树，两个最小的为兄弟
+{
+  int min1=32767,min2=32767;//min2较min1小
+  double min1quan=32767,min2quan=32767;//min2和min1它们对应的权
+  while(no_tree(zu,n))//非只有一个根树==还是森林
+   {
+   	 min1quan=32767;min2quan=32767;
+	     for (int i = 0; i < n; ++i)
+	     {
+	     	if (zu[i]!=NULL)
+	     	{
+	     		if (zu[i]->quan < min2quan)
+	     		{//小于最小的
+	     			min1=min2;min1quan=min2quan;
+	     			min2=i;min2quan=zu[i]->quan;
+	     			continue;
+	     		}
+	     		if (zu[i]->quan < min1quan)
+	     		{//仅仅是小于第二小的
+	     			min1=i;min1quan=zu[i]->quan;
+	     		}
+	     	}
+         }
+       ////上部分找到了最小的两个根树
+       treezhi temp=new struct tree;
+       temp->symbol='\0';
+       temp->quan=min1quan + min2quan;//把w（T）+w(T')作为新树的权
+       temp->left=zu[min1];//大的在左子树
+       temp->right=zu[min2];//小的在右子树
+
+       zu[min2]=temp;
+       zu[min1]=NULL;//把较小设为null
+  }
+  return zu[min2];//返回根
+}
+int no_tree(treezhi* zu,int n)
+{
+	int j=0;
+	for (int i = 0; i < n; ++i)
+		if (zu[i]!=NULL)
+			++j;
+
+	return (j-1);//非只有一个根树
+}
+void traverse(treezhi head)
+{
+	if (head!=NULL)
+	{
+		if(head->symbol!='\0')
+	    	cout<<head->symbol;
+		traverse(head->left);
+		traverse(head->right);
+	}
+}
+

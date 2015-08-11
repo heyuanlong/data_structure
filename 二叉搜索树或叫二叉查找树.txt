@@ -1,0 +1,236 @@
+#include<stdio.h>//二叉搜索树//或叫二叉查找树///////////释放内存时候会报错？？？？      
+#include<stdlib.h>////////////////////////删除操作、、出错了啊
+#include<string.h>
+#include <assert.h>// 断言
+
+typedef struct tree
+{
+  int a;
+  struct tree*left;
+  struct tree*right;
+}tree,*treezhi;
+
+
+void insert(int value,treezhi tree);/////////////插入数据
+int* find(int f,treezhi tree);//////////////二叉查找树的迭代查找
+treezhi find1(int key,treezhi tree);////////二叉查找树的迭代查找
+treezhi find2(int x,treezhi t);/////////////递归的查找函数
+void traverse_left(treezhi bianli);/////////////先序遍历搜索树
+treezhi findmin(treezhi t);/////////////////////findmin的递归实现
+treezhi findmax(treezhi t);/////////////////////findmax的非递归实现
+void deleted_left(int x,treezhi t);///////////////////////////////////////////////删除操作
+
+
+void main()
+{ 
+tree root;
+root.a=1;
+root.left=NULL;
+root.right=NULL;
+
+insert(7,&root);//要用取地址符
+insert(3,&root);//要用取地址符
+insert(5,&root);//要用取地址符
+insert(0,&root);//要用取地址符
+insert(6,&root);//要用取地址符
+insert(2,&root);//要用取地址符
+insert(4,&root);//要用取地址符
+insert(8,&root);//要用取地址符
+insert(9,&root);//要用取地址符
+traverse_left(&root);
+puts("");
+
+
+printf("%d\n", findmin(&root)->a);
+printf("%d\n", findmax(&root)->a);
+
+printf("%d\n", find2(3,&root)->a);
+printf("%d\n", find1(3,&root)->a);
+printf("%d\n",*find(3,&root));
+
+deleted_left(7,&root);
+traverse_left(&root);
+puts("");
+
+}
+
+void insert(int value,treezhi tree)//插入数据
+{
+  treezhi current,*link;//link是指向指针的指针
+  /////////////////////////////link主要是用来保存最后要插入的位置
+    link=&tree;//////////tree是指针变量
+
+    while((current=*link)!=NULL)
+    {
+          if(value < current->a)
+            link=&current->left;
+          else
+          {
+            assert(value != current->a);//二叉搜索树不能有相等的值
+            link=&current->right;
+          }
+    }
+  current=(treezhi)malloc(sizeof(tree));
+  assert(current!=NULL);
+  current->a=value;
+  current->left=NULL;
+  current->right=NULL;
+
+*link=current;///////////////////左值的使用//////////用得好啊
+}
+
+int* find(int f,treezhi tree)//查找数据
+{
+  treezhi current;
+  current=tree;
+  while(current!=NULL && current->a != f)
+  {
+    if(f < current->a)//左子树搜索
+      current=current->left;
+    else
+     current=current->right;//右子树搜索
+
+  }
+  if(current!=NULL)
+      return &current->a;
+  else
+      return NULL;
+}
+treezhi find1(int key,treezhi tree)
+{//////////////////////////////二叉查找树的迭代查找
+  //这个函数很牛逼
+    treezhi current=tree;
+  while(current)
+  {
+    if(key==current->a)return current;//ok
+    if(key<current->a)
+      current=current->left;//左找
+    else
+      current=current->right;//右找
+  }
+  return NULL;
+}
+
+treezhi find2(int x,treezhi t)/////////////递归的查找函数
+{
+  treezhi current=t;
+  if (current==NULL)
+  return 0;
+  if(x < current->a)return find2(x,current->left);
+  else if(x > current->a)return find2(x,current->right);
+  else return current;
+}
+
+
+treezhi findmin(treezhi ttt)/////////////findmin的递归实现
+{
+  treezhi t=ttt;
+  if(t==NULL)
+    return NULL;
+  else if(t->left==NULL)
+    return t;
+  else 
+  return findmin(t->left);
+}
+
+treezhi findmax(treezhi ttt)//////////////findmax的非递归实现
+{
+  treezhi t=ttt;
+  if(t!=NULL)
+  while(t->right != NULL)
+  t=t->right;
+
+  return t;
+  
+}
+void traverse_left(treezhi bianli)//总是先序遍历二叉树
+{
+  if(bianli!=NULL)
+  {
+    printf("%d",bianli->a);
+      traverse_left(bianli->left);
+      traverse_left(bianli->right);
+  }
+}
+//删除的结点可用其左子树中的最大元素代替或用其右子树的最小元素代替
+//最大元素在右边，最小元素在最左边
+//最大元素可有左子树，最小元素可有友子树
+//以下选择的是用其左子树中的最大元素代替
+void deleted_left(int x,treezhi ttt)//////////////删除操作
+{
+        treezhi father=ttt;//父结点
+        treezhi current=ttt;//要删的
+
+        while(current)
+        {
+          if(x==current->a)break;//ok
+          if(x<current->a)
+          {
+            father=current;
+            current=current->left;//左找
+          }
+          else
+          {
+            father=current;
+            current=current->right;//右找
+          }
+        }
+        if (current==NULL){
+          printf("no this data\n");
+          return;
+        }
+        //上面找到了要删的结点
+//-----------------------------------------------///
+  if (current->left==NULL && current->right==NULL)//无儿子的
+        {
+            if (father->left==current)
+               father->left=NULL;
+            else father->right=NULL;
+            
+          free(current);
+        }
+  else if (current->left==NULL)//无左子树
+          {
+           //友子树action；
+              treezhi youfather=current;//右子树的父结点
+              treezhi youcurrent=current->right;//右子树的最小元素
+              while(youcurrent->left)
+              {
+                youfather=youcurrent;
+                youcurrent=youcurrent->left;//右子树的最小元素在左边
+              }
+                  if (youfather==current)//只有纯右子树
+                  {
+                    youfather->right=youcurrent->right;
+                    current->a=youcurrent->a;
+                    free(youcurrent); 
+                  }
+                  else{//还有小的左子树
+                    youfather->left=youcurrent->right;
+                    current->a=youcurrent->a;
+                     free(youcurrent);            
+                  } 
+                   
+
+          }
+  else{//有左子树    
+              treezhi zuofather=current;//左子树的父结点
+              treezhi zuocurrent=current->left;//左子树的最大元素
+              while(zuocurrent->right)
+              {
+                zuofather=zuocurrent;
+                zuocurrent=zuocurrent->right;//左子树的最大元素在右边
+              }
+                  if (zuofather==current)//只有纯左子树
+                  {
+                    zuofather->left=zuocurrent->left;
+                    current->a=zuocurrent->a;
+                    free(zuocurrent); 
+                  }
+                  else{//还有小的右子树
+                    zuofather->right=zuocurrent->left;
+                    current->a=zuocurrent->a;
+                    free(zuocurrent);//////////////////////释放内存时候会报错？？？？       
+                  }          
+     }
+}
